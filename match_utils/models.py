@@ -17,7 +17,7 @@ import os.path
 
 def load_gan(mode, device = 'cpu', path: Text = '.'):
     if mode == "biggan":
-        gan = BigGAN.from_pretrained('biggan-deep-256').to(device)
+        gan = BigGAN.from_pretrained('biggan-deep-128').to(device)
         gan_layers = []
         for name, layer in gan.named_modules():
             if "conv" in name:
@@ -45,7 +45,7 @@ def load_gan(mode, device = 'cpu', path: Text = '.'):
                 if "synthesis." in name:
                     gan_layers.append(name)   
     elif mode == "styleganxl":
-        with dnnlib.util.open_url("https://s3.eu-central-1.amazonaws.com/avg-projects/stylegan_xl/models/imagenet256.pkl") as f:
+        with dnnlib.util.open_url("https://s3.eu-central-1.amazonaws.com/avg-projects/stylegan_xl/models/imagenet128.pkl") as f:
             gan = styleganxl.legacy.load_network_pkl(f)['G_ema'].to(device)
             gan_layers = []
             for name, layer in gan.named_modules():
