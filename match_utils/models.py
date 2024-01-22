@@ -8,7 +8,7 @@ import clip
 import dnnlib
 import styleganxl.legacy
 import pickle
-from stylegan2.model import Generator
+# from stylegan2.model import Generator
 from mae import load_mae
 import timm.models.vision_transformer
 from typing import Text
