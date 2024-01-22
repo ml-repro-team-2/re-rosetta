@@ -641,8 +641,14 @@ for file in tqdm.tqdm(files):
         i2 = np.array(Image.open(os.path.join(opt.dir1,file)))
         all_ssim.append(ssim(i1, i2))
         all_psnrs.append(psnr(i1, i2))
+        
 print('LPIPS', np.mean(all_lpips))
 print('SSIM', np.mean(all_ssim))
 print('PSNR', np.mean(all_psnrs))
 print('LEN', len(all_psnrs))
+
+f.write('\nLPIPS', np.mean(all_lpips))
+f.write('\nSSIM', np.mean(all_ssim))
+f.write('\nPSNR', np.mean(all_psnrs))
+f.write('\nLEN', len(all_psnrs))
 f.close()
