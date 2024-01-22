@@ -589,6 +589,15 @@ def ssim(p0, p1, range=255.):
 def psnr(p0, p1, peak=255.):
     return peak_signal_noise_ratio(p0, p1, data_range=peak)
 
+
+def rmse(p0, p1):
+    return normalized_root_mse(p0, p1)
+
+
+def nmi(p0, p1, bins=100):
+    return normalized_mutual_information(p0, p1, bins=bins)
+
+
 def slice_at_axis(sl, axis):
     """
     Construct tuple of slices to slice an array in the given dimension.
@@ -621,6 +630,8 @@ files = os.listdir(opt.dir0)
 all_lpips = []
 all_ssim = []
 all_psnrs = []
+all_rmse = []
+all_nmi = []
 import tqdm 
 for file in tqdm.tqdm(files):
     if(os.path.exists(os.path.join(opt.dir1,file))):
@@ -641,14 +652,21 @@ for file in tqdm.tqdm(files):
         i2 = np.array(Image.open(os.path.join(opt.dir1,file)))
         all_ssim.append(ssim(i1, i2))
         all_psnrs.append(psnr(i1, i2))
+        all_rmse.append(rmse(i1, i2))
+        all_nmi.append(nmi(i1, i2))
         
 print('LPIPS', np.mean(all_lpips))
 print('SSIM', np.mean(all_ssim))
 print('PSNR', np.mean(all_psnrs))
+print('RMSE', np.mean(all_rmse))
+print('NMI', np.mean(all_nmi))
 print('LEN', len(all_psnrs))
+
 
 f.write('\nLPIPS', np.mean(all_lpips))
 f.write('\nSSIM', np.mean(all_ssim))
 f.write('\nPSNR', np.mean(all_psnrs))
+f.write('\nRMSE', np.mean(all_rmse))
+f.write('\nNMI', np.mean(all_nmi))
 f.write('\nLEN', len(all_psnrs))
 f.close()
