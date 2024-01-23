@@ -662,11 +662,13 @@ print('RMSE', np.mean(all_rmse))
 print('NMI', np.mean(all_nmi))
 print('LEN', len(all_psnrs))
 
+metrics = ['\n\n', 
+           f'LPIPS = {np.mean(all_lpips)}',
+           f'SSIM = {np.mean(all_ssim)}',
+           f'PSNR = {np.mean(all_psnrs)}',
+           f'RMSE = {np.mean(all_rmse)}',
+           f'NMI = {np.mean(all_nmi)}',
+           f'LEN = {len(all_psnrs)}']
 
-f.write('\nLPIPS', np.mean(all_lpips))
-f.write('\nSSIM', np.mean(all_ssim))
-f.write('\nPSNR', np.mean(all_psnrs))
-f.write('\nRMSE', np.mean(all_rmse))
-f.write('\nNMI', np.mean(all_nmi))
-f.write('\nLEN', len(all_psnrs))
+f.writelines(metrics)
 f.close()
