@@ -574,7 +574,11 @@ def normalized_mutual_information(image0, image1, *, bins=100):
             bins=bins,
             density=True,
             )
-
+    
+    def entropy(X):
+        #TODO: fix NMI
+        return np.apply_along_axis(lambda x: x*np.log(x), 0, X)
+        
     H0 = entropy(np.sum(hist, axis=0))
     H1 = entropy(np.sum(hist, axis=1))
     H01 = entropy(np.reshape(hist, -1))
@@ -653,22 +657,22 @@ for file in tqdm.tqdm(files):
         all_ssim.append(ssim(i1, i2))
         all_psnrs.append(psnr(i1, i2))
         all_rmse.append(rmse(i1, i2))
-        all_nmi.append(nmi(i1, i2))
+#         all_nmi.append(nmi(i1, i2))
         
 print('LPIPS', np.mean(all_lpips))
 print('SSIM', np.mean(all_ssim))
 print('PSNR', np.mean(all_psnrs))
 print('RMSE', np.mean(all_rmse))
-print('NMI', np.mean(all_nmi))
+# print('NMI', np.mean(all_nmi))
 print('LEN', len(all_psnrs))
 
-metrics = ['\n\n', 
-           f'LPIPS = {np.mean(all_lpips)}',
-           f'SSIM = {np.mean(all_ssim)}',
-           f'PSNR = {np.mean(all_psnrs)}',
-           f'RMSE = {np.mean(all_rmse)}',
-           f'NMI = {np.mean(all_nmi)}',
-           f'LEN = {len(all_psnrs)}']
+metrics = ['\n', 
+           f'\nLPIPS = {np.mean(all_lpips)}',
+           f'\nSSIM = {np.mean(all_ssim)}',
+           f'\nPSNR = {np.mean(all_psnrs)}',
+           f'\nRMSE = {np.mean(all_rmse)}',
+#            f'\nNMI = {np.mean(all_nmi)}',
+           f'\nLEN = {len(all_psnrs)}']
 
 f.writelines(metrics)
 f.close()
