@@ -521,7 +521,7 @@ def _pad_to(arr, shape):
     return np.pad(arr, pad_width=padding, mode='constant', constant_values=0)
 
 
-def normalized_mutual_information(image0, image1, *, bins=100):
+def normalized_mutual_information(image0, image1, *, bins=100, eps=1e-6):
     r"""Compute the normalized mutual information (NMI).
     The normalized mutual information of :math:`A` and :math:`B` is given by::
     ..math::
@@ -576,7 +576,7 @@ def normalized_mutual_information(image0, image1, *, bins=100):
             )
     
     def entropy(X):
-        return np.dot(X, np.log(X))
+        return np.dot(X, np.log(X + eps * np.ones(X.shape)))
         
     H0 = entropy(np.sum(hist, axis=0))
     H1 = entropy(np.sum(hist, axis=1))
