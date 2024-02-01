@@ -657,13 +657,6 @@ for file in tqdm.tqdm(files):
         all_psnrs.append(psnr(i1, i2))
         all_rmse.append(rmse(i1, i2))
         all_nmi.append(nmi(i1, i2))
-        
-print('LPIPS', np.mean(all_lpips))
-print('SSIM', np.mean(all_ssim))
-print('PSNR', np.mean(all_psnrs))
-print('RMSE', np.mean(all_rmse))
-print('NMI', np.mean(all_nmi))
-print('LEN', len(all_psnrs))
 
 metrics = ['\n', 
            f'\nLPIPS = {np.mean(all_lpips)}',
@@ -671,7 +664,11 @@ metrics = ['\n',
            f'\nPSNR = {np.mean(all_psnrs)}',
            f'\nRMSE = {np.mean(all_rmse)}',
            f'\nNMI = {np.mean(all_nmi)}',
-           f'\nLEN = {len(all_psnrs)}']
+           f'\nLEN = {len(all_psnrs)}',
+           ]
 
+for metric in metrics:
+    print(metric)
+    
 f.writelines(metrics)
 f.close()
