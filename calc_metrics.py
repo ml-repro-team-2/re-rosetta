@@ -652,7 +652,7 @@ for file in tqdm.tqdm(files):
         dist01 = loss_fn.forward(img0,img1)
         # print('%s: %.3f'%(file,dist01))
         all_lpips.append(dist01.detach().cpu().numpy())
-        f.writelines('%s: %.6f\n'%(file,dist01))
+        # f.writelines('%s: %.6f\n'%(file,dist01))
         i1 = np.array(Image.open(os.path.join(opt.dir0,file)))
         i2 = np.array(Image.open(os.path.join(opt.dir1,file)))
         all_ssim.append(ssim(i1, i2))
@@ -673,7 +673,7 @@ for metric in metrics:
     print(metric)
     
 lines = [
-    'Classid,Type,LPIPS,SSIM,PSNR,RMSE,NMI,LEN',
+    'Classid,Type,LPIPS,SSIM,PSNR,RMSE,NMI,LEN\n',
     f'{opt.classid},{opt.type},{np.mean(all_lpips)},{np.mean(all_ssim)},{np.mean(all_psnrs)},{np.mean(all_rmse)},{np.mean(all_nmi)},{len(all_psnrs)}'
 ]
     
