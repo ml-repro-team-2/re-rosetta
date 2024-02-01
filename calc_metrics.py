@@ -14,7 +14,7 @@ parser.add_argument('-o','--out', type=str, default='./example_dists.txt')
 parser.add_argument('-v','--version', type=str, default='0.1')
 parser.add_argument('--use_gpu', action='store_true', help='turn on flag to use GPU')
 parser.add_argument('-i', '--classid', type=int)
-parser.add_argument('-t', '--type', type=str, default='act_matching')
+parser.add_argument('-t', '--type', type=str)
 
 opt = parser.parse_args()
 
