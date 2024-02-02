@@ -631,7 +631,7 @@ if(opt.use_gpu):
     loss_fn.cuda()
 
 # crawl directories
-f = open(opt.out,'w')
+f = open(opt.out,'a')
 files = os.listdir(opt.dir0)
 all_lpips = []
 all_ssim = []
