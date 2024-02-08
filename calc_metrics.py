@@ -13,6 +13,9 @@ parser.add_argument('-d1','--dir1', type=str, default='./imgs/ex_dir1')
 parser.add_argument('-o','--out', type=str, default='./example_dists.txt')
 parser.add_argument('-v','--version', type=str, default='0.1')
 parser.add_argument('--use_gpu', action='store_true', help='turn on flag to use GPU')
+parser.add_argument('-i', '--classid', type=int)
+parser.add_argument('-t', '--type', type=str)
+parser.add_argument('-k', type=int, default=1)
 
 opt = parser.parse_args()
 
@@ -521,7 +524,7 @@ def _pad_to(arr, shape):
     return np.pad(arr, pad_width=padding, mode='constant', constant_values=0)
 
 
-def normalized_mutual_information(image0, image1, *, bins=100):
+def normalized_mutual_information(image0, image1, *, bins=100, eps=1e-6):
     r"""Compute the normalized mutual information (NMI).
     The normalized mutual information of :math:`A` and :math:`B` is given by::
     ..math::
@@ -574,7 +577,10 @@ def normalized_mutual_information(image0, image1, *, bins=100):
             bins=bins,
             density=True,
             )
-
+    
+    def entropy(X):
+        return np.dot(X, np.log(X + eps * np.ones(X.shape)))
+        
     H0 = entropy(np.sum(hist, axis=0))
     H1 = entropy(np.sum(hist, axis=1))
     H01 = entropy(np.reshape(hist, -1))
@@ -588,6 +594,15 @@ def ssim(p0, p1, range=255.):
 
 def psnr(p0, p1, peak=255.):
     return peak_signal_noise_ratio(p0, p1, data_range=peak)
+
+
+def rmse(p0, p1):
+    return normalized_root_mse(p0, p1)
+
+
+def nmi(p0, p1, bins=100):
+    return normalized_mutual_information(p0, p1, bins=bins)
+
 
 def slice_at_axis(sl, axis):
     """
@@ -616,11 +631,13 @@ if(opt.use_gpu):
     loss_fn.cuda()
 
 # crawl directories
-f = open(opt.out,'w')
+f = open(opt.out,'a')
 files = os.listdir(opt.dir0)
 all_lpips = []
 all_ssim = []
 all_psnrs = []
+all_rmse = []
+all_nmi = []
 import tqdm 
 for file in tqdm.tqdm(files):
     if(os.path.exists(os.path.join(opt.dir1,file))):
@@ -636,13 +653,30 @@ for file in tqdm.tqdm(files):
         dist01 = loss_fn.forward(img0,img1)
         # print('%s: %.3f'%(file,dist01))
         all_lpips.append(dist01.detach().cpu().numpy())
-        f.writelines('%s: %.6f\n'%(file,dist01))
+        print('%s: %.6f\n'%(file,dist01))
         i1 = np.array(Image.open(os.path.join(opt.dir0,file)))
         i2 = np.array(Image.open(os.path.join(opt.dir1,file)))
         all_ssim.append(ssim(i1, i2))
         all_psnrs.append(psnr(i1, i2))
-print('LPIPS', np.mean(all_lpips))
-print('SSIM', np.mean(all_ssim))
-print('PSNR', np.mean(all_psnrs))
-print('LEN', len(all_psnrs))
+        all_rmse.append(rmse(i1, i2))
+        all_nmi.append(nmi(i1, i2))
+
+metrics = ['\n', 
+           f'\nLPIPS = {np.mean(all_lpips)}',
+           f'\nSSIM = {np.mean(all_ssim)}',
+           f'\nPSNR = {np.mean(all_psnrs)}',
+           f'\nRMSE = {np.mean(all_rmse)}',
+           f'\nNMI = {np.mean(all_nmi)}',
+           f'\nLEN = {len(all_psnrs)}',
+           ]
+
+for metric in metrics:
+    print(metric)
+    
+lines = [
+    'Classid,MatchesType,K,LPIPS,SSIM,PSNR,RMSE,NMI,LEN\n',
+    f'{opt.classid},{opt.type},{opt.k},{np.mean(all_lpips)},{np.mean(all_ssim)},{np.mean(all_psnrs)},{np.mean(all_rmse)},{np.mean(all_nmi)},{len(all_psnrs)}'
+]
+
+f.writelines(lines)
 f.close()
